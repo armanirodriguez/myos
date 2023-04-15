@@ -4,7 +4,7 @@
 disk_read:
     pusha
     mov     ah, 0x02            ; Disk Read Interrupt
-    mov     al, 0x02            ; Read 2 sectors
+    mov     al, 0x09            ; Read 9 sectors
     mov     ch, 0x00            ; Cylinder 0
     mov     cl, 0x02            ; Sector 2
     mov     dh, 0x00            ; Head 0
@@ -12,7 +12,7 @@ disk_read:
     int     0x13                ; Perform the read
 
     jc      disk_read_error     ; Print error message if carry flag is set
-    cmp     al, 0x02            ; Check number of sectors
+    cmp     al, 0x09            ; Check number of sectors
     jne     disk_sector_error
     popa
     ret

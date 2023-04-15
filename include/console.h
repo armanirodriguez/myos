@@ -1,6 +1,8 @@
 #ifndef H_CONSOLE
 #define H_CONSOLE
 
+#include <stdint.h>
+
 typedef enum {
     BLACK = 0,
     BLUE,
@@ -22,10 +24,14 @@ typedef enum {
 
 void clear_terminal();
 void print_character(char c);
+void print_integer(int num);
 void print_character_with_color(char c, Color background, Color foreground);
 void print_string(const char *str);
 void print_string_with_color(const char *str, Color background, Color foreground);
 void print_line(const char *str);
 void print_line_with_color(const char *str, Color background, Color foreground);
+
+void update_cursor();
+uint16_t get_cursor_position();
 
 #endif
