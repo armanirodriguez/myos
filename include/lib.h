@@ -4,7 +4,8 @@
 #include <stddef.h>
 
 void itoa(char *buf, int num);
-char *strrev(char *str, unsigned int length);
+int strcmp(const char *str1, const char *str2);
 size_t strlen(const char *str);
+char *strrev(char *str, unsigned int length);
 
 #endif
