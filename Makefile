@@ -9,8 +9,8 @@ TARGET=os.bin
 
 .PHONY: run compile clean
 
-compile: $(TARGET)
 run: qemu_launch
+compile: $(TARGET)
 
 qemu_launch: $(TARGET)
 	qemu-system-i386 -drive format=raw,file=$<,index=0,if=floppy
