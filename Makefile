@@ -1,7 +1,7 @@
 CC=gcc
 INCLUDE_DIR = include
 C_FLAGS = -Wall -Werror -Wextra -fno-pie -m32 -ffreestanding -I$(INCLUDE_DIR)
-C_FILES=kernel.c console.c ./device/portmap.c ./device/keyboard/keyboard.c ./lib/itoa.c ./lib/strrev.c
+C_FILES=$(shell find . -name \*.c | tac)
 OBJS=$(C_FILES:.c=.o)
 TARGET=os.bin
 
