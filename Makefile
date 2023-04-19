@@ -4,7 +4,9 @@ C_FLAGS = -Wall -Werror -Wextra -fno-pie -m32 -ffreestanding -I$(INCLUDE_DIR)
 C_FILES=$(shell find . -name \*.c | tac)
 OBJS=$(C_FILES:.c=.o)
 TARGET=os.bin
+.PHONY: all compile clean
 
+compile: $(TARGET)
 all: qemu_launch
 
 qemu_launch: $(TARGET)
