@@ -8,6 +8,7 @@ call    switch_to_32bit
 boot_init:
     pop     bx  ; Save Return Address
     KERNEL_OFFSET equ 0x1000
+    NUM_SECTORS equ 9
 
     ; Stack Setup
     mov     bp, 0x9000
@@ -18,8 +19,9 @@ boot_init:
     jmp bx
 
 kernel_load:
-    ; Read 2 sectors from disk to KERNEL_ADDRESS
+    ; Read NUM_SECOTRS sectors from disk to KERNEL_ADDRESS
     pusha
+    mov     cl, NUM_SECTORS
     mov     bx, KERNEL_OFFSET
     call    disk_read
     popa
