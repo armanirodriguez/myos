@@ -55,11 +55,9 @@ static void read_until_newline() {
 
 void read_command(char *command_buf, char *args_buf)
 {
-    int index = 0;
-    int starting_position = terminal_position;
+    int index = 0, reading_command = 1, starting_position = terminal_position;
     *command_buf = *args_buf = '\0';
     read_until_newline();
-    int reading_command = 1;
     for (unsigned int i = starting_position; i < terminal_position; i+=2) 
     {
         char input = VGA_BUFFER[i];

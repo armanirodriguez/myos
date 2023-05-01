@@ -18,7 +18,8 @@ void main(void)
     {
         print_string_with_color(prompt, BLACK,LIGHT_CYAN);
         read_command(command_buf,args_buf);
-        if (handle_command(command_buf, args_buf) < 0) {
+        if (handle_command(command_buf, args_buf) < 0) 
+        {
             return;
         }
     }
