@@ -81,7 +81,7 @@ int handle_command(char *command_buf, char *args_buf)
 {
     if (!strcmp(command_buf, "help"))
     {
-        print_string(HELP_MENU);
+        print_stringcd .(HELP_MENU);
     } 
     else if (!strcmp(command_buf, "cls"))
     {
@@ -163,7 +163,7 @@ static void set_terminal_font_color(char *color)
     {
         terminal_fg_color = LIGHT_GREEN;
     }
-     else if (!strcmp(color, "light cyan"))
+    else if (!strcmp(color, "light cyan"))
     {
         terminal_fg_color = LIGHT_CYAN;
     }
@@ -218,7 +218,7 @@ void print_character(char c)
 
 void print_integer(int toPrint)
 {
-    char buf[11];
+    char buf[12];
     itoa(buf, toPrint);
     print_string(buf);
 }
