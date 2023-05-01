@@ -99,6 +99,10 @@ int handle_command(char *command_buf, char *args_buf)
 
 static void set_terminal_font_color(char *color)
 {
+    if (*color == '-')
+    {
+        ++color;
+    }
     if (!strcmp(color, "black"))
     {
         terminal_fg_color = BLACK;
