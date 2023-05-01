@@ -8,7 +8,7 @@ call    switch_to_32bit
 boot_init:
     pop     bx  ; Save Return Address
     KERNEL_OFFSET equ 0x1000
-    NUM_SECTORS equ 9
+    NUM_SECTORS equ 10
 
     ; Stack Setup
     mov     bp, 0x9000

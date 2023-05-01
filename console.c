@@ -18,6 +18,13 @@ static unsigned int terminal_position = 0;
 
 static Color terminal_fg_color, terminal_bg_color;
 
+const char HELP_MENU[] = \
+"help -> display this menu\n"\
+"cls -> clear the screen\n"\
+"echo [str] -> print a line to the screen\n"\
+"set-terminal-font-color [color] -> change the font color\n"\
+"exit -> exit the OS\n";
+
 void init_terminal()
 {
     terminal_fg_color = LIGHT_GRAY;
@@ -72,7 +79,15 @@ void read_command(char *command_buf, char *args_buf)
 
 int handle_command(char *command_buf, char *args_buf)
 {
-    if (!strcmp(command_buf, "echo"))
+    if (!strcmp(command_buf, "help"))
+    {
+        print_line(HELP_MENU);
+    } 
+    else if (!strcmp(command_buf, "cls"))
+    {
+        clear_terminal();
+    } 
+    else if (!strcmp(command_buf, "echo"))
     {
         print_line(args_buf);
     }
@@ -93,7 +108,7 @@ int handle_command(char *command_buf, char *args_buf)
     {
         print_string_with_color("Error: ", BLACK, RED);
         print_string_with_color(command_buf, terminal_bg_color, terminal_fg_color);
-        print_line_with_color(" is not a valid command.", BLACK, RED);
+        print_line_with_color(" is not a valid command. Run 'help' for a list of commands.", BLACK, RED);
     }
     return 0;
 }
