@@ -28,7 +28,7 @@ kernel-entry.o: kernel-entry.elf
 	nasm $< -f elf -o $@
 
 %.o: %.c
-	$(CC) ${C_FLAGS} -c $< -o $@
+	$(CC) $(C_FLAGS) -c $< -o $@
 
 clean:
 	find . -type f \( -name \*.o -o -name \*.bin \) | xargs --no-run-if-empty rm
