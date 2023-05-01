@@ -81,7 +81,7 @@ int handle_command(char *command_buf, char *args_buf)
 {
     if (!strcmp(command_buf, "help"))
     {
-        print_stringcd .(HELP_MENU);
+        print_string(HELP_MENU);
     } 
     else if (!strcmp(command_buf, "cls"))
     {
@@ -218,7 +218,7 @@ void print_character(char c)
 
 void print_integer(int toPrint)
 {
-    char buf[12];
+    char buf[1];
     itoa(buf, toPrint);
     print_string(buf);
 }
