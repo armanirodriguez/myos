@@ -123,6 +123,10 @@ static void set_terminal_font_color(char *color)
     {
         terminal_fg_color = BLACK;
     }
+    else if (!strcmp(color, "blue"))
+    {
+        terminal_fg_color = BLUE;
+    }
     else if (!strcmp(color, "green"))
     {
         terminal_fg_color = GREEN;
@@ -209,7 +213,6 @@ void clear_terminal()
 
 void print_character(char c)
 {
-    //terminal_fg_color=WHITE;
     print_character_with_color(c, terminal_bg_color, terminal_fg_color);
 }
 
