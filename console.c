@@ -6,11 +6,12 @@
 #define VGA_WIDTH       80
 #define VGA_HEIGHT      25
 #define BYTES_PER_CHAR  2
-
+#define VGA_MAX_INDEX   (VGA_WIDTH * VGA_HEIGHT * BYTES_PER_CHAR)
 #define is_special_char(c) ((c) <= 31)
 
 static void handle_special_char(char c);
 static void set_terminal_font_color(char *color);
+static void shift_terminal_up();
 
 char *const VGA_BUFFER = (char*) 0xb8000;
 static unsigned int terminal_position = 0;
@@ -212,6 +213,9 @@ void print_character_with_color(char c, Color background, Color foreground)
     }
     else
     {
+        if (terminal_position + 2 > VGA_MAX_INDEX) {
+            shift_terminal_up();
+        }
         VGA_BUFFER[terminal_position++] = c;
         VGA_BUFFER[terminal_position++] = (background << 4) | foreground;
     }
@@ -256,5 +260,16 @@ static void handle_special_char(char c)
             handle_newline_character();
             break;
     }
+}
+
+static void shift_terminal_up()
+{
+    char *line = VGA_BUFFER;
+    for (int i = 0; i < VGA_HEIGHT - 1; i++) {
+        memcpy(line, line + VGA_WIDTH * BYTES_PER_CHAR, VGA_WIDTH * BYTES_PER_CHAR);
+        line += VGA_WIDTH * BYTES_PER_CHAR;
+    }
+    memset(line, 0, VGA_WIDTH * BYTES_PER_CHAR);
+    terminal_position -= VGA_WIDTH * BYTES_PER_CHAR;
 }
 
