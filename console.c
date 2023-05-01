@@ -81,7 +81,7 @@ int handle_command(char *command_buf, char *args_buf)
 {
     if (!strcmp(command_buf, "help"))
     {
-        print_line(HELP_MENU);
+        print_string(HELP_MENU);
     } 
     else if (!strcmp(command_buf, "cls"))
     {
