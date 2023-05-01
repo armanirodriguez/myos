@@ -270,12 +270,21 @@ static void handle_newline_character()
     terminal_position += (BYTES_PER_CHAR * VGA_WIDTH) - (terminal_position % (BYTES_PER_CHAR * VGA_WIDTH));
 }
 
+static void handle_backspace()
+{
+    VGA_BUFFER[--terminal_position] = (terminal_bg_color << 4) | terminal_fg_color;
+    VGA_BUFFER[--terminal_position] = 0;
+}
+
 static void handle_special_char(char c)
 {
     switch(c)
     {
         case '\n':
             handle_newline_character();
+            break;
+        case '\b':
+            handle_backspace();
             break;
     }
 }
