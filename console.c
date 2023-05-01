@@ -1,5 +1,6 @@
 #include "console.h"
 #include "portmap.h"
+#include "keyboard.h"
 #include "lib.h"
 
 #define VGA_WIDTH       80
@@ -9,17 +10,161 @@
 #define is_special_char(c) ((c) <= 31)
 
 static void handle_special_char(char c);
+static void set_terminal_font_color(char *color);
 
 char *const VGA_BUFFER = (char*) 0xb8000;
 static unsigned int terminal_position = 0;
 
-void update_cursor()
+static Color terminal_fg_color, terminal_bg_color;
+
+void init_terminal()
+{
+    terminal_fg_color = LIGHT_GRAY;
+    terminal_bg_color = BLACK;
+}
+
+static void update_cursor()
 {
     uint16_t cursor_position = terminal_position >> 1;
     outb(0x3D4, 0x0F);
     outb(0x3D5, (uint8_t) cursor_position);
     outb(0x3D4, 0x0E);
     outb(0x3D5, (uint8_t) (cursor_position >> 8));
+}
+
+static void read_until_newline() {
+    unsigned char byte, c;
+    while (1) {
+        while ((byte = scan())) {
+            c = charmap[byte];
+            print_character(c);
+            if (c == '\n') {
+                return;
+            }
+        }
+    }
+}
+
+void read_command(char *command_buf, char *args_buf)
+{
+    int index = 0;
+    int starting_position = terminal_position;
+    read_until_newline();
+    int reading_command = 1;
+    for (unsigned int i = starting_position; i < terminal_position; i+=2) 
+    {
+        char input = VGA_BUFFER[i];
+        if (input == ' ' && reading_command)
+        {
+            command_buf[index] = '\0';
+            command_buf = args_buf;
+            index = 0;
+            reading_command = 0;
+        }
+        else
+        {
+            command_buf[index++] = input;
+        }
+    }
+    command_buf[index] = '\0'; 
+}
+
+int handle_command(char *command_buf, char *args_buf)
+{
+    if (!strcmp(command_buf, "echo"))
+    {
+        print_line(args_buf);
+    }
+    else if (!strcmp(command_buf, "exit"))
+    {
+        print_line("goodbye");
+        return -1;
+    }
+    else if (!strcmp(command_buf, "set-terminal-font-color"))
+    {
+        set_terminal_font_color(args_buf);
+    }
+    else if (strlen(command_buf) == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        print_string_with_color("Error: ", BLACK, RED);
+        print_string_with_color(command_buf, terminal_bg_color, terminal_fg_color);
+        print_line_with_color(" is not a valid command.", BLACK, RED);
+    }
+    return 0;
+}
+
+static void set_terminal_font_color(char *color)
+{
+    if (!strcmp(color, "black"))
+    {
+        terminal_fg_color = BLACK;
+    }
+    else if (!strcmp(color, "green"))
+    {
+        terminal_fg_color = GREEN;
+    }
+    else  if (!strcmp(color, "cyan"))
+    {
+        terminal_fg_color = CYAN;
+    }
+    else if (!strcmp(color, "red"))
+    {
+        terminal_fg_color = RED;
+    }
+    else if (!strcmp(color, "magenta"))
+    {
+        terminal_fg_color = MAGENTA;
+    }
+    else if (!strcmp(color, "brown"))
+    {
+        terminal_fg_color = BROWN;
+    }
+    else if (!strcmp(color, "light gray"))
+    {
+        terminal_fg_color = LIGHT_GRAY;
+    }
+    else if (!strcmp(color, "dark gray"))
+    {
+        terminal_fg_color = DARK_GRAY;
+    }
+     else if (!strcmp(color, "light blue"))
+    {
+        terminal_fg_color = LIGHT_BLUE;
+    }
+     else if (!strcmp(color, "light green"))
+    {
+        terminal_fg_color = LIGHT_GREEN;
+    }
+     else if (!strcmp(color, "light cyan"))
+    {
+        terminal_fg_color = LIGHT_CYAN;
+    }
+    else if (!strcmp(color, "light red"))
+    {
+        terminal_fg_color = LIGHT_RED;
+    }
+    else if (!strcmp(color, "light magenta"))
+    {
+        terminal_fg_color = LIGHT_MAGENTA;
+    }
+    else if (!strcmp(color, "yellow"))
+    {
+        terminal_fg_color = YELLOW;
+    }
+    else if (!strcmp(color, "white"))
+    {
+        terminal_fg_color = WHITE;
+    }
+    else
+    {
+        print_string_with_color("Error: ", BLACK, RED);
+        print_string_with_color(color, terminal_bg_color, terminal_fg_color);
+        print_line_with_color(" is not a valid color.", BLACK, RED);
+    }
 }
 
 uint16_t get_cursor_position() {
@@ -38,19 +183,14 @@ void clear_terminal()
         VGA_BUFFER[i++] = 0;
         VGA_BUFFER[i++] = 7;
     }
+    terminal_position = 0;
+    update_cursor();
 }
 
 void print_character(char c)
 {
-    if (is_special_char(c))
-    {
-        handle_special_char(c);
-    }
-    else
-    {
-        VGA_BUFFER[terminal_position++] = c;
-        VGA_BUFFER[terminal_position++] = 7;
-    }
+    //terminal_fg_color=WHITE;
+    print_character_with_color(c, terminal_bg_color, terminal_fg_color);
 }
 
 void print_integer(int toPrint)
@@ -70,16 +210,13 @@ void print_character_with_color(char c, Color background, Color foreground)
     {
         VGA_BUFFER[terminal_position++] = c;
         VGA_BUFFER[terminal_position++] = (background << 4) | foreground;
-
     }
+    update_cursor();
 }
 
 void print_string(const char *str)
 {
-    while (*str != '\0')
-    {
-        print_character(*str++);
-    }
+    print_string_with_color(str, terminal_bg_color, terminal_fg_color);
 }
 
 void print_string_with_color(const char *str, Color background, Color foreground)
@@ -93,8 +230,7 @@ void print_string_with_color(const char *str, Color background, Color foreground
 
 void print_line(const char *str)
 {
-    print_string(str);
-    print_character('\n');
+    print_line_with_color(str, terminal_bg_color, terminal_fg_color);
 }
 
 void print_line_with_color(const char *str, Color background, Color foreground)
