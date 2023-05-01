@@ -155,7 +155,7 @@ static void set_terminal_font_color(char *color)
     {
         terminal_fg_color = DARK_GRAY;
     }
-     else if (!strcmp(color, "light blue"))
+    else if (!strcmp(color, "light blue"))
     {
         terminal_fg_color = LIGHT_BLUE;
     }
