@@ -3,14 +3,15 @@ INCLUDE_DIR=include
 C_FLAGS=-Wall -Werror -Wextra -fno-pie -m32 -ffreestanding -I$(INCLUDE_DIR)
 C_FILES=kernel.c $(shell find . -name \*.c | grep -v kernel.c)
 OBJS=$(C_FILES:.c=.o)
+
 BOOTLOADER=./boot/boot.bin
 KERNEL=kernel.bin
 TARGET=os.bin
 
 .PHONY: run compile clean
 
-run: qemu_launch
 compile: $(TARGET)
+run: qemu_launch
 
 qemu_launch: $(TARGET)
 	qemu-system-i386 -drive format=raw,file=$<,index=0,if=floppy
@@ -31,4 +32,4 @@ kernel-entry.o: kernel-entry.elf
 	$(CC) $(C_FLAGS) -c $< -o $@
 
 clean:
-	find . -type f \( -name \*.o -o -name \*.bin \) | xargs --no-run-if-empty rm
+	find . -type f \( -name \*.o -o -name \*.bin \) | xargs rm
